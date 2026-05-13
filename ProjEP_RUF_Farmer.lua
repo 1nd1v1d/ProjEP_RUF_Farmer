@@ -113,16 +113,16 @@ end
 
 -- ── Info-Fenster ─────────────────────────────────────────────
 
-local INFO_W   = 490
+local INFO_W   = 660
 local MAX_ROWS = 10   -- max gleichzeitig angezeigte Fraktionen
 
 local infoFrame = nil
 local rowCells  = {}  -- [rowIdx][colIdx] = FontString
 
--- Spalten: Fraktion | Stand | Fehl.Ruf | Spenden | Runenstoff
-local COL_X = { 14, 175, 285, 370, 430 }
-local COL_W = { 158, 107,  80,  58,  56 }
-local COL_H = { "LEFT", "RIGHT", "RIGHT", "RIGHT", "RIGHT" }
+-- Spalten: Fraktion | Stand | Fehl.Ruf | Spenden | Runenstoff | Gesamtkosten
+local COL_X = { 14, 155, 258, 338, 398, 458 }
+local COL_W = { 138, 100,  76,  57,  57, 185 }
+local COL_H = { "LEFT", "RIGHT", "RIGHT", "RIGHT", "RIGHT", "RIGHT" }
 
 local function CreateInfoFrame()
     infoFrame = CreateFrame("Frame", "ProjEP_RUF_Farmer_InfoFrame", UIParent)
@@ -153,7 +153,7 @@ local function CreateInfoFrame()
 
     -- Spalten-Header
     local HEADER_Y = -42
-    local headers  = { "Fraktion", "Stand", "Fehl. Ruf", "Spenden", "Runenstoff" }
+    local headers  = { "Fraktion", "Stand", "Fehl. Ruf", "Spenden", "Runenstoff", "Gesamtkosten" }
     for i, h in ipairs(headers) do
         local fs = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         fs:SetPoint("TOPLEFT", COL_X[i], HEADER_Y)
@@ -173,7 +173,7 @@ local function CreateInfoFrame()
     for row = 1, MAX_ROWS do
         rowCells[row] = {}
         local rowY = HEADER_Y - 20 - (row - 1) * 22
-        for col = 1, 5 do
+        for col = 1, 6 do
             local fs = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
             fs:SetPoint("TOPLEFT", COL_X[col], rowY)
             fs:SetWidth(COL_W[col])
@@ -201,6 +201,9 @@ local function PopulateInfoFrame()
     local factions = GetFactionData()
     local numRows  = math.min(#factions, MAX_ROWS)
 
+    -- AH-Preis einmal holen (fuer alle Zeilen)
+    local avgPreis, ahQuelle = GetRunenstoffAHPreis()
+
     -- Zeilen befuellen / leeren
     for row = 1, MAX_ROWS do
         if row <= numRows then
@@ -215,15 +218,23 @@ local function PopulateInfoFrame()
                 rowCells[row][3]:SetText("|cFF00FF00-|r")
                 rowCells[row][4]:SetText("|cFF00FF00-|r")
                 rowCells[row][5]:SetText("|cFF00FF00-|r")
+                rowCells[row][6]:SetText("|cFF00FF00-|r")
             else
+                local kostenText
+                if avgPreis then
+                    kostenText = FormatMoney(avgPreis * runenstoff)
+                else
+                    kostenText = "|cFF888888-|r"
+                end
                 rowCells[row][1]:SetText(f.name)
                 rowCells[row][2]:SetText("|cFFCCCCCC" .. standing .. "|r")
                 rowCells[row][3]:SetText("|cFFFFFF80" .. verbleibend .. "|r")
                 rowCells[row][4]:SetText("|cFF80FF80" .. spenden .. "x|r")
                 rowCells[row][5]:SetText("|cFFFFAA00" .. runenstoff .. "x|r")
+                rowCells[row][6]:SetText(kostenText)
             end
         else
-            for col = 1, 5 do rowCells[row][col]:SetText("") end
+            for col = 1, 6 do rowCells[row][col]:SetText("") end
         end
     end
 
@@ -259,17 +270,16 @@ local function PopulateInfoFrame()
         infoFrame.fsPreis:SetText("")
         infoFrame.fsGesamt:SetText("")
     else
-        local avgPreis, quelle = GetRunenstoffAHPreis()
         infoFrame.fsTotal:SetText(
             "Runenstoff gesamt: |cFFFFAA00" .. totalRunenstoff .. "x|r")
         if avgPreis then
             infoFrame.fsPreis:SetText(
-                "|cFF00CCFF[AH Trader – " .. quelle .. "]|r  " ..
+                "|cFF00CCFF[AH Trader – " .. ahQuelle .. "]|r  " ..
                 "Preis/Stk: " .. FormatMoney(avgPreis))
             infoFrame.fsGesamt:SetText(
-                "Gesamtkosten: " .. FormatMoney(avgPreis * totalRunenstoff))
+                "Gesamtkosten gesamt: " .. FormatMoney(avgPreis * totalRunenstoff))
         else
-            infoFrame.fsPreis:SetText("|cFF888888(ProjEP AH Trader nicht vorhanden)|r")
+            infoFrame.fsPreis:SetText("|cFF888888(ProjEP AH Trader nicht vorhanden – keine Kostenberechnung)|r")
             infoFrame.fsGesamt:SetText("")
         end
     end
