@@ -1,0 +1,17 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+  <!-- Event-Frame via XML (zuverlaessiger auf Project Epoch als CreateFrame in Lua) -->
+  <Frame name="ProjEP_RUF_Farmer_Frame">
+    <Scripts>
+      <OnLoad>
+        ProjEP_RUF_Farmer_OnLoad(self);
+      </OnLoad>
+      <OnEvent>
+        ProjEP_RUF_Farmer_OnEvent(self, event, ...);
+      </OnEvent>
+    </Scripts>
+  </Frame>
+
+</Ui>

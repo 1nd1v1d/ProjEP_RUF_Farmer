@@ -1,0 +1,10 @@
+## Interface: 30300
+## Title: ProjEP Ruf Farmer
+## Notes: Zeigt benoetigte Runenstoffspenden fuer Hauptstadt-Fraktionen (Ehrfuerchtig) – Project Epoch WotLK 3.3.5
+## Author: ProjEP_RF
+## Version: 1.0
+## OptionalDeps: ProjEP_AH_Trader
+## SavedVariables:
+
+ProjEP_RUF_Farmer.lua
+ProjEP_RUF_Farmer.xml
