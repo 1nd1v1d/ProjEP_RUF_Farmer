@@ -4,7 +4,7 @@
 ## Author: ProjEP_RF
 ## Version: 1.0
 ## OptionalDeps: ProjEP_AH_Trader
-## SavedVariables:
+## SavedVariables: ProjEP_RUF_Farmer_DB
 
 ProjEP_RUF_Farmer.lua
 ProjEP_RUF_Farmer.xml
